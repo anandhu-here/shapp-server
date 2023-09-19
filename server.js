@@ -108,7 +108,7 @@ io.on('connection', (socket) => {
     socket.on('load', async({username, mile})=>{
         try {
 
-            socket.emit('loadedtest', "hello");
+            const loadedtest = await socket.emit('loadedtest', "hello");
 
             ref_loc = Object.keys(userSockets).map(item=>{
                 if(item === username){
@@ -117,13 +117,11 @@ io.on('connection', (socket) => {
                 }
                 else return null;
             })
+            console.log(ref_loc, "ref_loc")
             if(ref_loc){
                 const users_ = Object.keys(userSockets).filter((username) => {
                     const userLocation = userSockets[username].location;
-                    console.log(ref_loc.latitude,
-                        ref_loc.longitude,
-                        userLocation.latitude,
-                        userLocation.longitude,"0000")
+                    console.log(userLocation, ",,,")
                     const distance = calculateDistance(
                         ref_loc.latitude,
                         ref_loc.longitude,
