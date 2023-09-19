@@ -115,7 +115,7 @@ io.on('connection', (socket) => {
             if(ref_loc){
                 const users_ = Object.keys(userSockets).filter((username) => {
                     const userLocation = userSockets[username].location;
-                    console.log(userLocation, ",,,")
+                    console.log(userSockets[username].location, "location")
                     const distance = calculateDistance(
                         ref_loc.latitude,
                         ref_loc.longitude,
