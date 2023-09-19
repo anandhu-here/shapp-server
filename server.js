@@ -56,7 +56,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 const userSockets = {indhu:{
     socket:{},
     location:{
-        lattitude:53.5703896,
+        latitude:53.5703896,
         longitude:-1.3108438
     }
 }}; 
