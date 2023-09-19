@@ -95,11 +95,13 @@ io.on('connection', (socket) => {
     socket.on('joined', async({username, location})=>{
         try {
             if (userSockets[username]) {
+                console.log(username, "already")
                 // Username already exists, send an error response
                 socket.emit('username', username);
                 return;
             }
             else{
+                console.log(username, "exists")
                 socket.emit('username', username);
                 // Store the socket association by username
                 userSockets[username] = {
