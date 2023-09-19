@@ -1,10 +1,6 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const userRoutes = require('./routes/user');
-const messageRoutes = require('./routes/message');
 const socketIo = require('socket.io');
-const Message = require('./models/message');
 const cors = require('cors');
 
 
@@ -24,8 +20,6 @@ const PORT = process.env.PORT || 3001; // Create an HTTP server
 app.use(bodyParser.json());
 
 // Routes
-app.use('/users', userRoutes);
-app.use('/messages', messageRoutes);
 
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
