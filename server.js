@@ -56,17 +56,6 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 const userSockets = {}; 
 const radiusInMiles = 1;
 
-const usernamesWithinRadius = Object.keys(userSockets).filter((username) => {
-    const userLocation = users[username].location;
-    const distance = calculateDistance(
-      referenceLocation.latitude,
-      referenceLocation.longitude,
-      userLocation.latitude,
-      userLocation.longitude
-    );
-  
-    return distance <= radiusInMiles;
-  });
 
 io.on('connection', (socket) => {
     // console.log(`Socket connected: ${socket.id}`);
@@ -117,29 +106,29 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('load', async(username)=>{
+    socket.on('load', async({username, mile})=>{
         try {
 
             socket.emit('loadedtest', "hello");
 
             ref_loc = Object.keys(userSockets).map(item=>{
-                console.log(item, username, "username")
                 if(item === username){
                     return userSockets[item].location;
                 }
                 else return null;
             })
-            console.log(ref_loc, "ref")
             if(ref_loc){
                 const users_ = Object.keys(userSockets).filter((username) => {
                     const userLocation = userSockets[username].location;
+                    console.log(userLocation, "loc")
                     const distance = calculateDistance(
                         ref_loc.latitude,
                         ref_loc.longitude,
                         userLocation.latitude,
                         userLocation.longitude
                     );
-                    return distance <= radiusInMiles;
+                    console.log(distance, "distance")
+                    return distance <= mile;
                 })
                 socket.emit('loaded', users_);
 
