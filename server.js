@@ -60,9 +60,7 @@ const radiusInMiles = 1;
 io.on('connection', (socket) => {
     // console.log(`Socket connected: ${socket.id}`);
 
-    Object.keys(key =>{
-        console.log(userSockets[key].location, "key")
-    })
+    
     socket.on('checkUsername', async(username)=>{
         try{
             let userFound = false;
@@ -111,6 +109,9 @@ io.on('connection', (socket) => {
 
     socket.on('load', async({username, mile})=>{
         try {
+            Object.keys(key =>{
+                console.log(userSockets[key].location, "key")
+            })
 
             socket.emit('loadedtest', "hello");
 
