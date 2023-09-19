@@ -91,11 +91,14 @@ io.on('connection', (socket) => {
             }
             else{
                 socket.emit('joined', username);
+                
                 // Store the socket association by username
                 userSockets[username] = {
                     socket:socket,
                     location:location
                 }
+
+                console.log(userSockets, username, "pppppppp")
             }
         
             
