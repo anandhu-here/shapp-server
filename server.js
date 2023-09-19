@@ -85,13 +85,11 @@ io.on('connection', (socket) => {
     socket.on('joined', async({username, location})=>{
         try {
             if (userSockets[username]) {
-                console.log(username, "already")
                 // Username already exists, send an error response
                 socket.emit('joined', username);
                 return;
             }
             else{
-                console.log(username, "exists")
                 socket.emit('joined', username);
                 // Store the socket association by username
                 userSockets[username] = {
@@ -109,14 +107,12 @@ io.on('connection', (socket) => {
 
     socket.on('load', async({username, mile})=>{
         try {
-            Object.keys(key =>{
-                console.log(userSockets[key].location, "key")
-            })
 
             socket.emit('loadedtest', "hello");
 
             ref_loc = Object.keys(userSockets).map(item=>{
                 if(item === username){
+                    console.log(userSockets[item].location, "--")
                     return userSockets[item].location;
                 }
                 else return null;
@@ -124,7 +120,6 @@ io.on('connection', (socket) => {
             if(ref_loc){
                 const users_ = Object.keys(userSockets).filter((username) => {
                     const userLocation = userSockets[username].location;
-                    console.log(userLocation, "loc", ref_loc)
                     const distance = calculateDistance(
                         ref_loc.latitude,
                         ref_loc.longitude,
