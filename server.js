@@ -33,10 +33,40 @@ const io = socketIo(server, {
 
 
 
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distance in kilometers
+  
+    // Convert to miles (1 kilometer = 0.621371 miles)
+    return distance * 0.621371;
+}
+
 
 
 
 const userSockets = {}; 
+const radiusInMiles = 1;
+
+const usernamesWithinRadius = Object.keys(userSockets).filter((username) => {
+    const userLocation = users[username].location;
+    const distance = calculateDistance(
+      referenceLocation.latitude,
+      referenceLocation.longitude,
+      userLocation.latitude,
+      userLocation.longitude
+    );
+  
+    return distance <= radiusInMiles;
+  });
 
 io.on('connection', (socket) => {
     // console.log(`Socket connected: ${socket.id}`);
@@ -62,7 +92,7 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('joined', async(username)=>{
+    socket.on('joined', async({username, location})=>{
         try {
             if (userSockets[username]) {
                 // Username already exists, send an error response
@@ -72,12 +102,43 @@ io.on('connection', (socket) => {
             else{
                 socket.emit('joinstatus', 200);
                 // Store the socket association by username
-                userSockets[username].socket = socket;
+                userSockets[username] = {
+                    socket:socket,
+                    location:location
+                }
             }
         
             
         } catch (error) {
             socket.emit('joinstatus', 500);
+            console.error(error, "eror");
+        }
+    })
+
+    socket.on('load', async(username)=>{
+        try {
+            ref_loc = Object.keys(userSockets).map(item=>{
+                if(item === username){
+                    return userSockets[item].location;
+                }
+                else return null;
+            })
+            if(!ref_loc){
+                const users_ = Object.keys(userSockets).filter((username) => {
+                    const userLocation = userSockets[username].location;
+                    const distance = calculateDistance(
+                        ref_loc.latitude,
+                        ref_loc.longitude,
+                        userLocation.latitude,
+                        userLocation.longitude
+                    );
+                    return distance <= radiusInMiles;
+                })
+                socket.emit('loaded', users_);
+
+            }
+        } catch (error) {
+            socket.emit('loadfailed');
             console.error(error, "eror");
         }
     })
