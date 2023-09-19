@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
                     location:location
                 }
 
-                console.log(userSockets, username, "pppppppp")
+                console.log(userSockets, username, "pppppppp", location)
             }
         
             
