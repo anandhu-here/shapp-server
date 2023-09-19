@@ -110,13 +110,7 @@ io.on('connection', (socket) => {
 
             const loadedtest = await socket.emit('loadedtest', "hello");
 
-            ref_loc = Object.keys(userSockets).map(item=>{
-                if(item === username){
-                    console.log(userSockets[item].location, "--")
-                    return userSockets[item].location;
-                }
-                
-            })
+            ref_loc = Object.keys(userSockets).filter(key=>key===username)[0]
             console.log(ref_loc, "ref_loc")
             if(ref_loc){
                 const users_ = Object.keys(userSockets).filter((username) => {
