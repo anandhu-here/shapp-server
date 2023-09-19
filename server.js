@@ -56,8 +56,8 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 const userSockets = {indhu:{
     socket:{},
     location:{
-        latitude:53.5703896,
-        longitude:-1.3108438
+        latitude:54.55684722195345,
+        longitude:-1.1961031281053485
     }
 }}; 
 const radiusInMiles = 1;
