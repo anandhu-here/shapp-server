@@ -119,6 +119,9 @@ io.on('connection', (socket) => {
 
     socket.on('load', async(username)=>{
         try {
+
+            socket.emit('loadedtest', "hello");
+
             ref_loc = Object.keys(userSockets).map(item=>{
                 console.log(item, username, "username")
                 if(item === username){
