@@ -96,11 +96,11 @@ io.on('connection', (socket) => {
         try {
             if (userSockets[username]) {
                 // Username already exists, send an error response
-                socket.emit('joinstatus', 409);
+                socket.emit('username', username);
                 return;
             }
             else{
-                socket.emit('joinstatus', 200);
+                socket.emit('username', username);
                 // Store the socket association by username
                 userSockets[username] = {
                     socket:socket,
@@ -110,7 +110,7 @@ io.on('connection', (socket) => {
         
             
         } catch (error) {
-            socket.emit('joinstatus', 500);
+            socket.emit('username', 500);
             console.error(error, "eror");
         }
     })
@@ -159,7 +159,7 @@ io.on('connection', (socket) => {
       }
     });
   
-    socket.on('disconnect', () => {
+    socket.on('socdisconnect', () => {
         const username = Object.keys(userSockets).find(
             (key) => userSockets[key] === socket
           );
