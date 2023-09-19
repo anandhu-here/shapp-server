@@ -115,7 +115,7 @@ io.on('connection', (socket) => {
                     console.log(userSockets[item].location, "--")
                     return userSockets[item].location;
                 }
-                else return null;
+                
             })
             console.log(ref_loc, "ref_loc")
             if(ref_loc){
