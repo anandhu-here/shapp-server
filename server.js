@@ -82,7 +82,9 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('joined', async({username, location})=>{
+    socket.on('joined', async(data)=>{
+        const {username, location} = data;
+        console.log(username, location, "[][]")
         try {
             if (userSockets[username]) {
                 // Username already exists, send an error response
@@ -97,8 +99,6 @@ io.on('connection', (socket) => {
                     socket:socket,
                     location:location
                 }
-
-                console.log(userSockets, username, "pppppppp", location)
             }
         
             
