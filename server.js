@@ -66,16 +66,18 @@ io.on('connection', (socket) => {
         try {
             if (userSockets[username]) {
                 // Username already exists, send an error response
-                socket.emit({status:409});
+                socket.emit('status', 409);
                 return;
             }
             else{
+                socket.emit('status', 200);
                 // Store the socket association by username
-                userSockets[username] = socket;
+                userSockets[username].socket = socket;
             }
         
             
         } catch (error) {
+            socket.emit('status', 500);
             console.error(error, "eror");
         }
     })
@@ -83,7 +85,7 @@ io.on('connection', (socket) => {
     socket.on('newMessage', async (data) => {
       try {
         const { sender, reciever, text, id } = data;
-        const receiverSocket = userSockets[reciever];
+        const receiverSocket = userSockets[reciever].socket;
       if (receiverSocket) {
         receiverSocket.emit('newMessage',text);
       } else {
