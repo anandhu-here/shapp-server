@@ -145,6 +145,7 @@ io.on('connection', (socket) => {
     socket.on('newMessage', async (data) => {
       try {
         const { sender, reciever, text, id } = data;
+        console.log(reciever, data, "rec data")
         const receiverSocket = userSockets[reciever].socket;
       if (receiverSocket) {
         receiverSocket.emit('newMessage', data);
