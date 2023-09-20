@@ -147,7 +147,7 @@ io.on('connection', (socket) => {
         const { sender, reciever, text, id } = data;
         const receiverSocket = userSockets[reciever].socket;
       if (receiverSocket) {
-        receiverSocket.emit('newMessage',text);
+        receiverSocket.emit('newMessage', data);
       } else {
         socket.emit({status:404});
         // Handle the case where the receiver's socket is not found (offline, not connected, etc.)
