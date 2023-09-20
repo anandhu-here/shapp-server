@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const socketIo = require('socket.io');
 const cors = require('cors');
+const { v4: uuidv4, v5: uuidv5, NIL: nilUUID } = require('uuid');
 
 
 const app = express();
@@ -143,6 +144,7 @@ io.on('connection', (socket) => {
     })
   
     socket.on('newMessage', async (data) => {
+        const randomUUID = uuidv4();
       try {
         const { sender, reciever, text, id, message } = data;
         console.log(reciever, data, "rec data")
@@ -150,7 +152,8 @@ io.on('connection', (socket) => {
 
         var out_ = message;
         out_.map(i=>{
-            i.user._id = 2
+            i.user._id = 2,
+            i._id = randomUUID
         })
       if (receiverSocket) {
         receiverSocket.emit('newMessage', {...data, message:out_});
