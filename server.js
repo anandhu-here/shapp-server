@@ -179,7 +179,7 @@ io.on('connection', (socket) => {
                             users_.unshift({username: user.username, distance:distance});
                         }
                     })
-                    socket.emit('loaded', users);
+                    socket.emit('loaded', users_);
                 }
                 else{
                     console.log("no location")
