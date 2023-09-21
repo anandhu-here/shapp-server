@@ -27,6 +27,33 @@ mongoose.connection.on('error', (err) => {
 
 app.use(bodyParser.json());
 
+
+// Clear db 
+async function clearDatabase() {
+    try {
+      // Connect to MongoDB
+      await mongoose.connect('mongodb://localhost/chatapp', {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+  
+      // Clear the collections
+      await mongoose.connection.db.dropCollection('users'); // Replace 'users' with your collection name(s)
+      
+      // You can add more collection drops if needed
+      // await mongoose.connection.db.dropCollection('otherCollection');
+      
+      console.log('Database cleared successfully.');
+    } catch (error) {
+      console.error('Error clearing the database:', error);
+    } finally {
+      // Close the database connection
+      await mongoose.connection.close();
+    }
+  }
+
+clearDatabase()
+
 // Routes
 
 app.use('/users', userRoutes)

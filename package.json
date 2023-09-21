@@ -13,6 +13,7 @@
     "uuid": "^9.0.1"
   },
   "scripts": {
-    "dev": "nodemon server"
+    "dev": "nodemon server",
+    "start":"node server"
   }
 }
