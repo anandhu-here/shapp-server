@@ -38,7 +38,7 @@ async function clearDatabase() {
       });
   
       // Clear the collections
-      await mongoose.connection.db.dropCollection('users'); // Replace 'users' with your collection name(s)
+      await mongoose.connection.dropCollection('users'); // Replace 'users' with your collection name(s)
       
       // You can add more collection drops if needed
       // await mongoose.connection.db.dropCollection('otherCollection');
