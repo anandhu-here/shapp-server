@@ -131,7 +131,7 @@ io.on('connection', (socket) => {
                         userLocation.latitude,
                         userLocation.longitude
                     );
-                    console.log(distance, "distance")
+                    console.log(distance, "distancejjjjjj")
                     if(distance <= mile && username!==username_ ){
                         return {username: username_, distance:distance}
                     }
