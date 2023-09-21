@@ -46,10 +46,7 @@ async function clearDatabase() {
       console.log('Database cleared successfully.');
     } catch (error) {
       console.error('Error clearing the database:', error);
-    } finally {
-      // Close the database connection
-      await mongoose.connection.close();
-    }
+    } 
   }
 
 clearDatabase()
