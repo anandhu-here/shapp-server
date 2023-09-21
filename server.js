@@ -182,6 +182,7 @@ io.on('connection', (socket) => {
                             users_.unshift({username: user.username, distance:distance});
                         }
                     })
+                    console.log(users_, "suers")
                     socket.emit('loaded', users_);
                 }
                 else{
