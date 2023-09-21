@@ -127,6 +127,8 @@ io.on('connection', (socket) => {
         
         try {
             const user = await User.findOne({username:username});
+
+            console.log("jelll")
             if(!user){
                 
                 const newUser = await User.create({username:username, socket:socket.id, location:location});
@@ -134,6 +136,7 @@ io.on('connection', (socket) => {
                 return
             }
             else{
+                console.log("hello")
                 socket.emit('joined', user.username);
             }
             // if (userSockets[username]) {
