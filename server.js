@@ -132,7 +132,9 @@ io.on('connection', (socket) => {
                         userLocation.longitude
                     );
                     console.log(distance, "distance")
-                    return username!==username_ && distance <= mile;
+                    if(distance <= mile && username!==username_ ){
+                        return {username: username_, distance:distance}
+                    }
                 })
                 socket.emit('loaded', users_);
 
