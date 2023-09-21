@@ -150,8 +150,8 @@ io.on('connection', (socket) => {
                             location.latitude,
                             location.longitude
                         );
-                        if(distance <= mile && username!==username_ ){
-                            users_.unshift({username: username_, distance:distance});
+                        if(distance <= mile && user.username!==username ){
+                            users_.unshift({username: user.username, distance:distance});
                         }
                     })
                     socket.emit('loaded', users);
@@ -174,7 +174,10 @@ io.on('connection', (socket) => {
       try {
         const { sender, reciever, text, id, message } = data;
         console.log(reciever, data, "rec data")
-        const receiverSocket = userSockets[reciever].socket;
+
+        const user = await User.findOne({username: reciever});
+
+        const receiverSocket = user.socket;
 
         var out_ = message;
         out_.map(i=>{
@@ -193,12 +196,7 @@ io.on('connection', (socket) => {
       }
     });
   
-    socket.on('socdisconnect', () => {
-        const username = Object.keys(userSockets).find(
-            (key) => userSockets[key].socket === socket
-          );
-          if (username) {
-            delete userSockets[username];
-          }
+    socket.on('socdisconnect', async() => {
+        const user = await User.deleteOne({socket:socket})
     });
   });
