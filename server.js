@@ -129,7 +129,7 @@ io.on('connection', (socket) => {
             const user = await User.findOne({username:username});
             if(!user){
                 
-                const newUser = await User.create({username:username, socket:JSON.stringify(socket), location:location});
+                const newUser = await User.create({username:username, socket:socket.id, location:location});
                 socket.emit('joined', newUser.username);
                 return
             }
@@ -202,15 +202,15 @@ io.on('connection', (socket) => {
 
         const user = await User.findOne({username: reciever});
 
-        const receiverSocket = user.socket;
+        const receiverSocketId = user.socket;
 
         var out_ = message;
         out_.map(i=>{
             i.user._id = 2,
             i._id = randomUUID
         })
-      if (receiverSocket) {
-        receiverSocket.emit('newMessage', {...data, message:out_});
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit('newMessage', {...data, message:out_})
       } else {
         socket.emit({status:404});
         // Handle the case where the receiver's socket is not found (offline, not connected, etc.)
@@ -222,6 +222,6 @@ io.on('connection', (socket) => {
     });
   
     socket.on('socdisconnect', async() => {
-        const user = await User.deleteOne({socket:socket})
+        const user = await User.deleteOne({socket:socket.id})
     });
   });
