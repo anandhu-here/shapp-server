@@ -178,6 +178,7 @@ io.on('connection', (socket) => {
                             location.latitude,
                             location.longitude
                         );
+                        console.log(distance, "distance");
                         if(distance <= mile && user.username!==username ){
                             users_.unshift({username: user.username, distance:distance});
                         }
