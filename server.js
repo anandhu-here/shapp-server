@@ -123,7 +123,8 @@ io.on('connection', (socket) => {
             u_name = Object.keys(userSockets).filter(key=>key===username)[0]
             ref_loc = userSockets[u_name].location;
             if(ref_loc){
-                const users_ = Object.keys(userSockets).filter((username_) => {
+                let users = [];
+                Object.keys(userSockets).filter((username_) => {
                     const userLocation = userSockets[username_].location;
                     const distance = calculateDistance(
                         ref_loc.latitude,
@@ -133,10 +134,10 @@ io.on('connection', (socket) => {
                     );
                     console.log(distance, "distancejjjjjj")
                     if(distance <= mile && username!==username_ ){
-                        return {username: username_, distance:distance}
+                        users.unshift({username: username_, distance:distance});
                     }
                 })
-                socket.emit('loaded', users_);
+                socket.emit('loaded', users);
 
             }
         } catch (error) {
