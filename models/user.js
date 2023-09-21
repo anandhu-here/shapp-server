@@ -1,12 +1,20 @@
-// // models/user.js
-// const mongoose = require('mongoose');
+// models/user.js
+const mongoose = require('mongoose');
 
-// const userSchema = new mongoose.Schema({
-//   username: {
-//     type: String,
-//     unique: true,
-//     required: true,
-//   },
-// });
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  socket:{
+    type: Object,
+    required:true
+  },
+  location:{
+    type:Object,
+    required:true
+  }
+});
 
-// module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);

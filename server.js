@@ -3,7 +3,9 @@ const bodyParser = require('body-parser');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const { v4: uuidv4, v5: uuidv5, NIL: nilUUID } = require('uuid');
-
+const { default: mongoose } = require('mongoose');
+const userRoutes = require('./routes/user');
+const User = require('./models/user')
 
 const app = express();
 
@@ -13,14 +15,21 @@ app.use(cors({
 const PORT = process.env.PORT || 3001; // Create an HTTP server
 
 // Connect to MongoDB (replace 'mongodb://localhost/chatapp' with your MongoDB URI)
-// mongoose.connect('mongodb://localhost/chatapp', { useNewUrlParser: true, useUnifiedTopology: true });
-// mongoose.connection.on('error', (err) => {
-//   console.error(`MongoDB connection error: ${err}`);
-// });
+mongoose.connect('mongodb://localhost/chatapp', { useNewUrlParser: true, useUnifiedTopology: true }).then(res=>{
+    console.log("Connection succesfull")
+})
+.catch(error=>{
+    console.log("DB connection error", error)
+})
+mongoose.connection.on('error', (err) => {
+  console.error(`MongoDB connection error: ${err}`);
+});
 
 app.use(bodyParser.json());
 
 // Routes
+
+app.use('/users', userRoutes)
 
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -64,23 +73,23 @@ const userSockets = {indhu:{
 const radiusInMiles = 1;
 
 
+
+
+
 io.on('connection', (socket) => {
     // console.log(`Socket connected: ${socket.id}`);
 
     
     socket.on('checkUsername', async(username)=>{
         try{
-            let userFound = false;
-            Object.keys(userSockets).map(key=>{
-                if(key===username){
-                    userFound = true
-                }
-            })
-            if(userFound){
-                socket.emit('usernamestatus', 200)
+            const user = await User.findOne({username:username});
+            if(!user){
+                socket.emit('usernamestatus', 404)
+                return
             }
             else{
-                socket.emit('usernamestatus', 404)
+                socket.emit('usernamestatus', 200);
+                return
             }
 
         }
@@ -91,22 +100,31 @@ io.on('connection', (socket) => {
 
     socket.on('joined', async(data)=>{
         const {username, location} = data;
-        console.log(username, location, "[][]")
+        
         try {
-            if (userSockets[username]) {
-                // Username already exists, send an error response
-                socket.emit('joined', username);
-                return;
+            const user = await User.findOne({username:username});
+            if(!user){
+                const newUser = await User.create({username:username, socket:socket, location:location});
+                socket.emit('joined', newUser.username);
+                return
             }
             else{
-                socket.emit('joined', username);
-                
-                // Store the socket association by username
-                userSockets[username] = {
-                    socket:socket,
-                    location:location
-                }
+                socket.emit('joined', user.username);
             }
+            // if (userSockets[username]) {
+            //     // Username already exists, send an error response
+            //     socket.emit('joined', username);
+            //     return;
+            // }
+            // else{
+            //     socket.emit('joined', username);
+                
+            //     // Store the socket association by username
+            //     userSockets[username] = {
+            //         socket:socket,
+            //         location:location
+            //     }
+            // }
         
             
         } catch (error) {
@@ -118,27 +136,32 @@ io.on('connection', (socket) => {
     socket.on('load', async({username, mile})=>{
         try {
 
-            const loadedtest = await socket.emit('loadedtest', "hello");
-
-            u_name = Object.keys(userSockets).filter(key=>key===username)[0]
-            ref_loc = userSockets[u_name].location;
-            if(ref_loc){
-                let users = [];
-                Object.keys(userSockets).filter((username_) => {
-                    const userLocation = userSockets[username_].location;
-                    const distance = calculateDistance(
-                        ref_loc.latitude,
-                        ref_loc.longitude,
-                        userLocation.latitude,
-                        userLocation.longitude
-                    );
-                    console.log(distance, "distancejjjjjj")
-                    if(distance <= mile && username!==username_ ){
-                        users.unshift({username: username_, distance:distance});
-                    }
-                })
-                socket.emit('loaded', users);
-
+            const user = await User.findOne({username:username});
+            if(user){
+                ref_loc = user.location;
+                if(ref_loc){
+                    let users_=[];
+                    const users = await User.find({});
+                    users.map(user=>{
+                        const location = user.location;
+                        const distance = calculateDistance(
+                            ref_loc.latitude,
+                            ref_loc.longitude,
+                            location.latitude,
+                            location.longitude
+                        );
+                        if(distance <= mile && username!==username_ ){
+                            users_.unshift({username: username_, distance:distance});
+                        }
+                    })
+                    socket.emit('loaded', users);
+                }
+                else{
+                    console.log("no location")
+                }
+            }
+            else{
+                console.log("No user found")
             }
         } catch (error) {
             socket.emit('loadfailed');
