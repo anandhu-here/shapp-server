@@ -104,7 +104,8 @@ io.on('connection', (socket) => {
         try {
             const user = await User.findOne({username:username});
             if(!user){
-                const newUser = await User.create({username:username, socket:socket, location:location});
+                
+                const newUser = await User.create({username:username, socket:JSON.stringify(socket), location:location});
                 socket.emit('joined', newUser.username);
                 return
             }
