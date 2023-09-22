@@ -29,9 +29,10 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/getUsers/:username', async(req, res)=>{
+router.get('/getUsers/:username/:mile', async(req, res)=>{
   try{
     const username = req.params.username;
+    const mile = req.params.mile;
     const users = await User.find({username: {$ne:username}});
     const curUser = await User.findOne({username:username});
     let users_ = [];
@@ -46,6 +47,7 @@ router.get('/getUsers/:username', async(req, res)=>{
     res.status(200).json({users:users_})
   }
   catch(error){
+    console.log(error)
     res.status(400).json({ error: error.message });
   }
 })
