@@ -200,7 +200,6 @@ io.on('connection', (socket) => {
         const randomUUID = uuidv4();
       try {
         const { sender, reciever, text, id, message, socket_id } = data;
-        console.log(reciever, data, "rec data")
 
         const user = await User.findOne({username: reciever});
 
@@ -215,7 +214,7 @@ io.on('connection', (socket) => {
 
         console.log(receiverSocketId, "socid")
       if (receiverSocketId) {
-        io.to(receiverSocketId).emit('newMessage', {...data, message:out_})
+        socket.emit('newMessage', {...data, message:out_})
       } else {
         socket.emit({status:404});
         // Handle the case where the receiver's socket is not found (offline, not connected, etc.)
