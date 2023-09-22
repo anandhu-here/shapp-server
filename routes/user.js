@@ -13,6 +13,17 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+router.get('/getUsers/:username', async(req, res)=>{
+  try{
+    const username = req.params.username;
+    const users = await User.find({username: {$ne:username}});
+    res.status(200).json({users:users})
+  }
+  catch(error){
+    res.status(400).json({ error: error.message });
+  }
+})
 router.post('/checkusername/:username', async (req, res) => {
     try {
         
