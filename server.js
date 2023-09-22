@@ -129,12 +129,12 @@ io.on('connection', (socket) => {
             const user = await User.findOne({username:username});
             if(!user){
                 const newUser = await User.create({username:username, socket:socket.id, location:location});
-                socket.emit('joined', {username:newUser.username, location:newUser.location});
+                socket.emit('joined', {username:newUser.username, location:newUser.location, socket_id: socket.id});
                 return
             }
             else{
                 console.log("hello")
-                socket.emit('joined', {username:user.username, location:user.location});
+                socket.emit('joined', {username:user.username, location:user.location, socket_id: socket.id});
             }
             // if (userSockets[username]) {
             //     // Username already exists, send an error response
@@ -198,19 +198,14 @@ io.on('connection', (socket) => {
         const randomUUID = uuidv4();
       try {
         const { sender, reciever, text, id, message, socket_id } = data;
-
-        const user = await User.findOne({username: reciever});
-
-        const receiverSocketId = user.socket;
-
         var out_ = message;
         out_.map(i=>{
             i.user._id = 2,
             i._id = randomUUID
         })
 
-      if (receiverSocketId && io.sockets.connected[receiverSocketId]) {
-        io.sockets.connected[receiverSocketId].emit('newMessage', {...data, message:out_})
+      if (socket_id && io.sockets.connected[socket_id]) {
+        io.sockets.connected[socket_id].emit('newMessage', {...data, message:out_})
       } else {
         console.log("socket id error")
         socket.emit({status:404});
