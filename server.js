@@ -202,7 +202,7 @@ io.on('connection', (socket) => {
     socket.on('newMessage', async (data) => {
         const randomUUID = uuidv4();
       try {
-        const { sender, reciever, text, id, message } = data;
+        const { sender, reciever, text, id, message, socket_id } = data;
         console.log(reciever, data, "rec data")
 
         const user = await User.findOne({username: reciever});
@@ -214,6 +214,9 @@ io.on('connection', (socket) => {
             i.user._id = 2,
             i._id = randomUUID
         })
+
+
+        console.log(receiverSocketId, "socid")
       if (receiverSocketId) {
         io.to(receiverSocketId).emit('newMessage', {...data, message:out_})
       } else {
