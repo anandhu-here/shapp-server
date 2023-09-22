@@ -175,12 +175,10 @@ io.on('connection', (socket) => {
                             location.latitude,
                             location.longitude
                         );
-                        console.log(distance, "distance");
                         if(distance <= mile && user.username!==username ){
                             users_.unshift({username: user.username, distance:distance});
                         }
                     })
-                    console.log(users_, "suers")
                     socket.emit('loaded', users_);
                 }
                 else{
@@ -211,11 +209,10 @@ io.on('connection', (socket) => {
             i._id = randomUUID
         })
 
-
-        console.log(receiverSocketId, "socid")
-      if (receiverSocketId) {
-        socket.emit('newMessage', {...data, message:out_})
+      if (receiverSocketId && io.sockets.connected[receiverSocketId]) {
+        io.sockets.connected[receiverSocketId].emit('newMessage', {...data, message:out_})
       } else {
+        console.log("socket id error")
         socket.emit({status:404});
         // Handle the case where the receiver's socket is not found (offline, not connected, etc.)
         // You may want to implement error handling or store messages for offline users.
