@@ -211,7 +211,7 @@ io.on('connection', (socket) => {
 
         console.log(io.sockets.connected, "connectd")
 
-      if (receiverSocketId && io.sockets.connected[receiverSocketId]) {
+      if (receiverSocketId) {
         io.to(receiverSocketId).emit('newMessage', {...data, message:out_})
       } else {
         console.log("error socket iofd")
