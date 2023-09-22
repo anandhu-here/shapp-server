@@ -209,6 +209,8 @@ io.on('connection', (socket) => {
             i._id = randomUUID
         })
 
+        console.log(io.sockets.connected, "connectd")
+
       if (receiverSocketId && io.sockets.connected[receiverSocketId]) {
         io.to(receiverSocketId).emit('newMessage', {...data, message:out_})
       } else {
