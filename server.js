@@ -224,7 +224,7 @@ io.on('connection', (socket) => {
       }
     });
   
-    socket.on('socdisconnect', async() => {
-        const user = await User.deleteOne({socket:socket.id})
+    socket.on('socdisconnect', async(username) => {
+        const user = await User.deleteOne({username:username});
     });
   });
