@@ -26,10 +26,13 @@ router.post('/checkusername/:username', async (req, res) => {
     }
   });
 
-router.post('/join/:username', async(req, res)=>{
+router.post('/join', async(req, res)=>{
     try {
-        const username = req.params.username;
-        const user = await User.findOne({username})
+        const {username} = req.body
+        const user = await User.findOne({username});
+        if(!user){
+            const newUser = await User({username})
+        }
         
     } catch (error) {
         

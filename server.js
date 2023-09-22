@@ -127,17 +127,14 @@ io.on('connection', (socket) => {
         
         try {
             const user = await User.findOne({username:username});
-
-            console.log("jelll")
             if(!user){
-                
                 const newUser = await User.create({username:username, socket:socket.id, location:location});
-                socket.emit('joined', newUser.username);
+                socket.emit('joined', {username:newUser.username, location:newUser.location});
                 return
             }
             else{
                 console.log("hello")
-                socket.emit('joined', user.username);
+                socket.emit('joined', {username:user.username, location:user.location});
             }
             // if (userSockets[username]) {
             //     // Username already exists, send an error response
