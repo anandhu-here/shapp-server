@@ -129,12 +129,12 @@ io.on('connection', (socket) => {
             const user = await User.findOne({username:username});
             if(!user){
                 const newUser = await User.create({username:username, socket:socket.id, location:location});
-                socket.emit('joined', {username:newUser.username, location:newUser.location, socket_id: socket.id});
+                socket.emit('joined', {username:newUser.username, location:newUser.location});
                 return
             }
             else{
                 console.log("hello")
-                socket.emit('joined', {username:user.username, location:user.location, socket_id: socket.id});
+                socket.emit('joined', {username:user.username, location:user.location});
             }
             // if (userSockets[username]) {
             //     // Username already exists, send an error response
@@ -198,16 +198,21 @@ io.on('connection', (socket) => {
         const randomUUID = uuidv4();
       try {
         const { sender, reciever, text, id, message, socket_id } = data;
+
+        const user = await User.findOne({username: reciever});
+
+        const receiverSocketId = user.socket;
+
         var out_ = message;
         out_.map(i=>{
             i.user._id = 2,
             i._id = randomUUID
         })
 
-      if (socket_id && io.sockets.connected[socket_id]) {
-        io.sockets.connected[socket_id].emit('newMessage', {...data, message:out_})
+      if (receiverSocketId && io.sockets.connected[receiverSocketId]) {
+        io.to(receiverSocketId).emit('newMessage', {...data, message:out_})
       } else {
-        console.log("socket id error")
+        console.log("error socket iofd")
         socket.emit({status:404});
         // Handle the case where the receiver's socket is not found (offline, not connected, etc.)
         // You may want to implement error handling or store messages for offline users.
