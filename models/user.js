@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   },
   socket:{
     type: String,
-    required:true
+    required:false
   },
   location:{
     type:Object,
