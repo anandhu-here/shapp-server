@@ -208,7 +208,7 @@ io.on('connection', (socket) => {
 
         const user = await User.findOne({username: reciever});
         const message_ = await Message.create({reciever, text:JSON.stringify(message), sender })
-
+        
         var out_ = message;
         out_.map(i=>{
             i.user._id = 2,
