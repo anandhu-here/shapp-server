@@ -5,7 +5,11 @@ const cors = require('cors');
 const { v4: uuidv4, v5: uuidv5, NIL: nilUUID } = require('uuid');
 const { default: mongoose } = require('mongoose');
 const userRoutes = require('./routes/user');
-const User = require('./models/user')
+const User = require('./models/user');
+const Message = require('./models/message');
+
+const router = require('./routes/index');
+
 
 const app = express();
 
@@ -53,7 +57,7 @@ clearDatabase()
 
 // Routes
 
-app.use('/users', userRoutes)
+
 
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -64,6 +68,9 @@ const io = socketIo(server, {
         origin:'*'
     }
 });
+
+
+router(app, io);
 
 
 function deg2rad(deg) {
@@ -200,8 +207,7 @@ io.on('connection', (socket) => {
         const { sender, reciever, text, id, message, socket_id } = data;
 
         const user = await User.findOne({username: reciever});
-
-        const receiverSocketId = user.socket;
+        const message_ = await Message.create({reciever, text:JSON.stringify(message), sender })
 
         var out_ = message;
         out_.map(i=>{
@@ -209,18 +215,9 @@ io.on('connection', (socket) => {
             i._id = randomUUID
         })
 
-        console.log(io.sockets.connected, "connectd")
-
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit('newMessage', {...data, message:out_})
-      } else {
-        console.log("error socket iofd")
-        socket.emit({status:404});
-        // Handle the case where the receiver's socket is not found (offline, not connected, etc.)
-        // You may want to implement error handling or store messages for offline users.
-      } // Broadcast the message to all connected clients
+        io.to(socket.id).emit('newMessage', {...data, message:out_})
       } catch (error) {
-        console.error(error, "eror");
+        console.log(error, "eror");
       }
     });
   

@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const Message = require('../models/message');
 
 
 
@@ -22,76 +23,119 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return d;
 }
 
+module.exports = (router, io) =>{
 
+    // Create a new user
+    router.post('/join', async (req, res) => {
+      try {
+        const username = req.body.username;
+        const location = req.body.location;
+        const userExist = await User.findOne({username:username});
+        if(userExist){
+          io.emit('joined', {username:userExist.username, location:userExist.location});
+          res.status(200).json(userExist);
+          
+        }
+        else{
+          const newUser = await User.create({username:username, location:location});
+          io.emit('joined', {username:newUser.username, location:newUser.location});
+          res.status(201).json(newUser);
+        }
+        
+      } catch (error) {
+        res.status(400).json({ error: error.message });
+      }
+    });
 
-// Create a new user
-router.post('/', async (req, res) => {
-  try {
-    const user = new User(req.body);
-    await user.save();
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+    router.get('/getUsers', async(req, res)=>{
+      try{
+        const users = await User.find({});
+        
+        
+        res.status(200).json({users:users})
+      }
+      catch(error){
+        console.log(error)
+        res.status(400).json({ error: error.message });
+      }
+    })
 
-router.get('/getUsers/:username/:mile', async(req, res)=>{
-  try{
-    const username = req.params.username;
-    const mile = req.params.mile;
-    const users = await User.find({username: {$ne:username}});
-    const curUser = await User.findOne({username:username});
-    let users_ = [];
+    router.get('/getMessages/:sender/:reciever', async(req, res)=>{
+      try{
 
-    users.map(user=>{
-      const distance = calculateDistance( curUser.location.latitude, curUser.location.longitude, user.location.latitude, user.location.longitude )
-      if(distance <= mile && user.username!==username ){
-          users_.unshift({username: user.username, distance:distance});
+        const sender = req.params.sender;
+        const reciever = req.params.reciever;
+        const messages = await Message.find({sender:sender, reciever:reciever});
+        
+        res.status(200).send(messages)
+      }
+      catch(error){
+        console.log(error)
+        res.status(400).json({ error: error.message });
+      }
+    })
+    router.get('/checkusername/:username', async (req, res) => {
+        try {
+            
+          const username = req.params.username;
+
+          const user = await User.findOne({username:username});
+          if(!user){
+            res.status(404).json({error:"No user"});
+          }
+          else{
+              res.status(200).send(user)
+          }
+        } catch (error) {
+          res.status(400).json({ error: error.message });
+        }
+      });
+    router.get('/load/:username/:mile', async(req, res)=>{
+      try{
+        const username = req.params.username;
+        const mile = req.params.mile;
+        const user = await User.findOne({username:username});
+        if(user){
+            ref_loc = user.location;
+            if(ref_loc){
+                let users_=[];
+                const users = await User.find({});
+                users.map(user=>{
+                    const location = user.location;
+                    const distance = calculateDistance(
+                        ref_loc.latitude,
+                        ref_loc.longitude,
+                        location.latitude,
+                        location.longitude
+                    );
+                    if(distance <= mile && user.username!==username ){
+                        users_.unshift({username: user.username, distance:distance});
+                    }
+                })
+                res.status(200).send(users_)
+            }
+            else{
+              res.status(400).json({error:"Location Error"})
+            }
+        }
+        else{
+          res.status(403).json({error:"Unauthorized"})
+        }
+      }
+      catch(error){
+        res.status(400).send(error)
       }
     })
     
-    res.status(200).json({users:users_})
-  }
-  catch(error){
-    console.log(error)
-    res.status(400).json({ error: error.message });
-  }
-})
-router.post('/checkusername/:username', async (req, res) => {
-    try {
-        
+
+    // Delete a user
+    router.delete('/delete/:username', async (req, res) => {
+      try {
         const username = req.params.username;
-
-      const user = new User({username:username});
-
-      res.status(201).json(user);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  });
-
-router.post('/join', async(req, res)=>{
-    try {
-        const {username} = req.body
-        const user = await User.findOne({username});
-        if(!user){
-            const newUser = await User({username})
-        }
-        
-    } catch (error) {
-        
-    }
-})
-
-// Delete a user
-router.delete('/:userId', async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    await User.findByIdAndDelete(userId);
-    res.json({ message: 'User deleted' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-module.exports = router
+        await User.findOneAndDelete({username});
+        res.json({ message: 'User deleted' });
+      } catch (error) {
+        res.status(400).json({ error: error.message });
+      }
+    });
+}
