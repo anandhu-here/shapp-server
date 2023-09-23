@@ -32,17 +32,18 @@ module.exports = (router, io) =>{
         const location = req.body.location;
         const userExist = await User.findOne({username:username});
         if(userExist){
-          io.emit('joined', {username:userExist.username, location:userExist.location});
+          // io.emit('joined', {username:userExist.username, location:userExist.location});
           res.status(200).json(userExist);
           
         }
         else{
           const newUser = await User.create({username:username, location:location});
-          io.emit('joined', {username:newUser.username, location:newUser.location});
+          // io.emit('joined', {username:newUser.username, location:newUser.location});
           res.status(201).json(newUser);
         }
         
       } catch (error) {
+        console.log(error, "error")
         res.status(400).json({ error: error.message });
       }
     });
