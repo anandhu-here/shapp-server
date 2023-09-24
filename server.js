@@ -234,5 +234,9 @@ io.on('connection', (socket) => {
   
     socket.on('socdisconnect', async(username) => {
         const user = await User.deleteOne({username:username});
+        await Message.deleteMany({$or:[
+            {sender:username},
+            {reciever:username}
+        ]})
     });
   });
