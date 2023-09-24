@@ -199,8 +199,7 @@ io.on('connection', (socket) => {
 
         var out_ = message;
         out_.map(i=>{
-            i.user._id = 2,
-            i._id = randomUUID
+            i.user._id = 2
         })
 
 
