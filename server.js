@@ -207,6 +207,8 @@ io.on('connection', (socket) => {
             i._id = randomUUID
         })
 
+        console.log(user.socket, 'oooooooo')
+
         io.to(user.socket).emit('newMessage', {...data, message:out_})
       } catch (error) {
         console.log(error, "eror");
