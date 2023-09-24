@@ -205,13 +205,22 @@ io.on('connection', (socket) => {
 
 
 
+        const recentMessagesFromSender = await Message.find({sender:sender, reciever:reciever});
         const recentMessagesFromReciever = await Message.find({sender:reciever, reciever:sender});
 
-        if(recentMessagesFromReciever.length === 1){
-            const user_ = await User.findOne({username: sender});
-            io.to(user_.socket).emit('newMessagePending', {...data, message:out_})
-            
+        if(recentMessagesFromSender.length > 0){
+            if(recentMessagesFromReciever.length === 0){
+                const user_ = await User.findOne({username: sender});
+                io.to(user_.socket).emit('newMessagePending', {...data, message:out_})
+                
+            }
+            else{
+                const message_ = await Message.create({reciever, text:out_, sender })
+    
+                io.to(user.socket).emit('newMessage', {...data, message:out_})
+            }
         }
+
         else{
             const message_ = await Message.create({reciever, text:out_, sender })
     
