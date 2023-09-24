@@ -143,26 +143,9 @@ io.on('connection', (socket) => {
         const {username, target_user} = data;
         
         try {
-            console.log(data, "data")
             const user = await User.findOneAndUpdate({username:username}, {socket:socket.id}, {new:true});
-
-            console.log(user, "user")
             socket.emit('socket_created', {target_user, username} )
-            // if (userSockets[username]) {
-            //     // Username already exists, send an error response
-            //     socket.emit('joined', username);
-            //     return;
-            // }
-            // else{
-            //     socket.emit('joined', username);
-                
-            //     // Store the socket association by username
-            //     userSockets[username] = {
-            //         socket:socket,
-            //         location:location
-            //     }
-            // }
-        
+            
             
         } catch (error) {
             socket.emit('socket_created', 500);
@@ -221,18 +204,18 @@ io.on('connection', (socket) => {
         })
 
 
-        const recentMessages = await Message.find({sender:sender, reciever:reciever});
 
-        if(recentMessages.length !== 1){
-            const message_ = await Message.create({reciever, text:out_, sender })
+        const recentMessagesFromReciever = await Message.find({sender:reciever, reciever:sender});
 
-            console.log(user.socket, 'oooooooo')
-    
-            io.to(user.socket).emit('newMessage', {...data, message:out_})
-        }
-        else{
+        if(recentMessagesFromReciever === 0){
             const user_ = await User.findOne({username: sender});
             io.to(user_.socket).emit('newMessagePending', {...data, message:out_})
+            
+        }
+        else{
+            const message_ = await Message.create({reciever, text:out_, sender })
+    
+            io.to(user.socket).emit('newMessage', {...data, message:out_})
         }
 
         
