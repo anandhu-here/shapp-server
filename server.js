@@ -130,11 +130,11 @@ io.on('connection', (socket) => {
     })
 
     socket.on('socket_create', async(data)=>{
-        const {username, location} = data;
+        const {username, target_user} = data;
         
         try {
             const user = await User.findOneAndUpdate({username:username}, {socket:socket.id}, {new:true});
-            socket.emit('socket_created', username )
+            socket.emit('socket_created', {target_user, username} )
             // if (userSockets[username]) {
             //     // Username already exists, send an error response
             //     socket.emit('joined', username);
