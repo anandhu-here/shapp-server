@@ -135,7 +135,7 @@ io.on('connection', (socket) => {
         
         try {
             console.log(data, "data")
-            const user = await User.findOneAndUpdate({username:username}, {socket:socket.id}, {new:true});]
+            const user = await User.findOneAndUpdate({username:username}, {socket:socket.id}, {new:true});
 
             console.log(user, "user")
             socket.emit('socket_created', {target_user, username} )
