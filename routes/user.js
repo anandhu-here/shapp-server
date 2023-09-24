@@ -68,7 +68,7 @@ module.exports = (router, io) =>{
         const reciever = req.params.reciever;
         const messages = await Message.find({sender:sender, reciever:reciever});
         
-        res.status(200).send(messages)
+        res.status(200).json({message:messages})
       }
       catch(error){
         console.log(error)
