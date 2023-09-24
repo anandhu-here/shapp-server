@@ -69,7 +69,7 @@ module.exports = (router, io) =>{
         const messages = await Message.find({sender:sender, reciever:reciever});
         const out = {sender, reciever, data:[]}
         messages.map(message=>{
-          out.data.unshift(message.text);
+          out.data.unshift(message.text[0]);
         })
         res.status(200).send(out)
       }
