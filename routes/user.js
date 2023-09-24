@@ -61,6 +61,23 @@ module.exports = (router, io) =>{
       }
     })
 
+    router.post('/deleteMessages/:sender/:reciever', async(req, res)=>{
+      try {
+        const sender = req.params.sender;
+        const reciever = req.params.reciever;
+        await Message.deleteMany({
+          $or:[
+            {sender:sender, reciever:reciever},
+            {reciever:sender, sender:reciever}
+          ]
+        });
+        res.status(200).json({message:"Success"});
+
+      } catch (error) {
+        res.status(400).send(error);
+      }
+    })
+
     router.get('/getMessages/:sender/:reciever', async(req, res)=>{
       try{
 
@@ -97,10 +114,10 @@ module.exports = (router, io) =>{
 
           const user = await User.findOne({username:username});
           if(!user){
-            res.status(404).json({error:"No user"});
+            res.status(200).json({status:404});
           }
           else{
-              res.status(200).send(user)
+              res.status(200).json({status:200})
           }
         } catch (error) {
           res.status(400).json({ error: error.message });
