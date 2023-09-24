@@ -67,8 +67,11 @@ module.exports = (router, io) =>{
         const sender = req.params.sender;
         const reciever = req.params.reciever;
         const messages = await Message.find({sender:sender, reciever:reciever});
-        
-        res.status(200).json({message:messages})
+        const out = {sender, reciever, data:[]}
+        messages.map(message=>{
+          out.data.unshift(message.text);
+        })
+        res.status(200).send(out)
       }
       catch(error){
         console.log(error)
