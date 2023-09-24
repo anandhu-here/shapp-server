@@ -130,6 +130,15 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on('initialJoin', async (username)=>{
+        try {
+            const user = await User.findOneAndUpdate({username}, {socket:socket.id}, {new:true});
+            
+        } catch (error) {
+            console.log(error)
+        }
+    })
+
     socket.on('socket_create', async(data)=>{
         const {username, target_user} = data;
         
@@ -210,11 +219,23 @@ io.on('connection', (socket) => {
             i.user._id = 2,
             i._id = randomUUID
         })
-        const message_ = await Message.create({reciever, text:out_, sender })
 
-        console.log(user.socket, 'oooooooo')
 
-        io.to(user.socket).emit('newMessage', {...data, message:out_})
+        const recentMessages = await Message.find({sender:sender, reciever:reciever});
+
+        if(recentMessages.length !== 1){
+            const message_ = await Message.create({reciever, text:out_, sender })
+
+            console.log(user.socket, 'oooooooo')
+    
+            io.to(user.socket).emit('newMessage', {...data, message:out_})
+        }
+        else{
+            const user_ = await User.findOne({username: sender});
+            io.to(user_.socket).emit('newMessagePending', {...data, message:out_})
+        }
+
+        
       } catch (error) {
         console.log(error, "eror");
       }
