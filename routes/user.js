@@ -61,17 +61,21 @@ module.exports = (router, io) =>{
       }
     })
 
-    router.get('/getMessages/:sender/:reciever/:currentUser', async(req, res)=>{
+    router.get('/getMessages/:sender/:reciever', async(req, res)=>{
       try{
 
         const sender = req.params.sender;
         const reciever = req.params.reciever;
-        const currentUser = req.params.currentUser;
-        const messages = await Message.find({sender:sender, reciever:reciever});
+        const messages = await Message.find({
+          $or:[
+            {sender:sender, reciever:reciever},
+            {reciever:sender, sender:reciever}
+          ]
+        });
         const out = {sender, reciever, data:[]}
         messages.map(message=>{
           temp = {...message.text[0]};
-          if(currentUser === sender){
+          if(sender === message.sender){
             if(temp.user._id === 2){
               temp.user._id = 1
             }
