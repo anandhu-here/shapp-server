@@ -207,7 +207,7 @@ io.on('connection', (socket) => {
 
         const recentMessagesFromReciever = await Message.find({sender:reciever, reciever:sender});
 
-        if(recentMessagesFromReciever.length=== 0){
+        if(recentMessagesFromReciever.length === 1){
             const user_ = await User.findOne({username: sender});
             io.to(user_.socket).emit('newMessagePending', {...data, message:out_})
             
