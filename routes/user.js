@@ -113,7 +113,8 @@ module.exports = (router, io) =>{
           const username = req.params.username;
 
           const user = await User.findOne({username:username});
-          console.log(user, "user", username)
+          const users = await User.find({});
+          console.log(user, "user", username, users)
           if(!user){
             res.status(200).json({status:404});
           }
