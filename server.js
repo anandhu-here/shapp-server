@@ -211,7 +211,7 @@ io.on('connection', (socket) => {
         if(recentMessagesFromSender.length > 0){
             if(recentMessagesFromReciever.length === 0){
                 const user_ = await User.findOne({username: sender});
-                io.to(user_.socket).emit('newMessagePending', {...data, message:out_})
+                io.to(user_.socket).emit('newMessagePending', message[0].id_)
                 
             }
             else{
